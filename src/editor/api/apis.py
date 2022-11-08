@@ -13,6 +13,7 @@ from fastapi import (
 )
 from ..schemas import AutoComplete
 from ...openai.gpt3 import GPT3
+from ...openai.functions import auto_completions
 
 router = APIRouter()
 
@@ -29,5 +30,7 @@ async def auto_complete(request: Request, schema: AutoComplete):
     text = schema.text
 
     # Send to GPT3 and get results
-    gpt3_instance = GPT3()
-    return JSONResponse(content={"message": "successful", "data": text})
+    gpt3_output = auto_completions(text)
+    return JSONResponse(
+        content={"message": "successful", "input_data": text, "completion": gpt3_output}
+    )
