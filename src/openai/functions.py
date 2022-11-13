@@ -51,3 +51,6 @@ def auto_completions(user_query):
     # final_list = [choice["text"][7:] for choice in choices]
 
     return textcomp_json["text"]
+
+
+
