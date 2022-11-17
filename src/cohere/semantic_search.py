@@ -165,6 +165,11 @@ def semantic_search(query,documents):
 
     
     results_dict = {}
+    normalized_score = sum(similar_item_ids[1])
+
     for index,score in zip(similar_item_ids[0],similar_item_ids[1]):
-        results_dict[index] = {"doc":documents_mapping.get(index),"relevance_score":score}
+        if score >= 1:
+            results_dict[index] = {"doc":documents_mapping.get(index),"relevance_score":0}
+        else:
+            results_dict[index] = {"doc":documents_mapping.get(index),"relevance_score":100-(round(score/normalized_score,2)*100)}
     return results_dict
