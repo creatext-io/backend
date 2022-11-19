@@ -172,4 +172,24 @@ def semantic_search(query,documents):
             results_dict[index] = {"doc":documents_mapping.get(index),"relevance_score":0}
         else:
             results_dict[index] = {"doc":documents_mapping.get(index),"relevance_score":100-(round(score/normalized_score,2)*100)}
+
+    # Add color hex for top 3 ranked docs
+    sorted_data = sorted(results_dict.items(), key=lambda x: x[1]["relevance_score"],reverse=True)
+
+    top_three = 1
+    for dict_tuple in sorted_data:
+        original_index = dict_tuple[0]
+
+        if dict_tuple[1]["relevance_score"] != 0:
+            if top_three ==1:
+                results_dict[original_index].update({"color":"#d2f8d2"})
+            elif top_three == 2:
+                results_dict[original_index].update({"color":"#ffc0cb"})
+            elif top_three == 3:
+                results_dict[original_index].update({"color":"#ffffe0"})
+            
+            top_three += 1
+        else:
+            results_dict[original_index].update({"color":""})
+
     return results_dict
