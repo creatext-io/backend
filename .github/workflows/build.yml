@@ -1,5 +1,4 @@
 name: Build and Dockerise
-description: An action that builds a docker image and pushes to Docker hub.
 on:
   push:
     branches: [main]
