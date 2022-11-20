@@ -6,7 +6,7 @@ from src.editor import api as editor_apis
 
 
 def get_application():
-    _app = FastAPI(title=settings.PROJECT_NAME)
+    _app = FastAPI(title=settings.PROJECT_NAME,docs_url="/mIO83IT2Nj6SKPgwxT31ig/docs",redoc_url=None,openapi_url=None)
 
     _app.add_middleware(
         CORSMiddleware,
