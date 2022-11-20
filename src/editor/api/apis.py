@@ -1,4 +1,5 @@
 import json
+import re
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from fastapi import (
@@ -44,7 +45,34 @@ async def search(request: Request, schema: Search):
 
     # Pre-process text and slice it into chunks.
     # Here we split the text based on newline characters.
-    documents_list = schema.text.split("\n")
+
+
+    # Use regex to parse for <p> tags
+    p_tag = re.finditer("<p>",schema.text)
+    p_slash_tag = re.finditer("</p>",schema.text)
+
+    pattern_list = {"p":[p_tag],"/p":[p_slash_tag]}
+    for key,match_obj in pattern_list.items():
+        pattern_list[key]=[match_p.span() for match_p in match_obj[0]]
+
+
+    # Now merge the two lists in using regex
+    final_list = []
+    for list in pattern_list.values():
+        final_list.extend(list)
+
+    # Sort the matches
+    final_list.sort()
+
+    # Prepare paragraphs for semantic search
+    documents_list = []
+
+    for index in range(0,len(final_list),2):
+        # Every even index is starting index of paragrah and odd index is ending index
+        doc = schema.text[final_list[index][1]:final_list[index+1][0]]
+        documents_list.append(doc)
+
+    # documents_list = schema.text.split("\n")
     search_results = semantic_search(query=schema.query,documents=documents_list)
 
     return JSONResponse(content={"message": "successful", "search_results": search_results})
