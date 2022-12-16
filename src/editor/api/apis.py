@@ -33,7 +33,7 @@ async def auto_complete(request: Request, schema: AutoComplete):
     text = schema.text
 
     # Send to GPT3 and get results
-    gpt3_output = auto_completions(text)
+    gpt3_output = auto_completions(text,multi_line=schema.multi_line)
     return JSONResponse(
         content={"message": "successful", "input_data": text, "completion": gpt3_output}
     )
@@ -74,7 +74,13 @@ async def search(request: Request, schema: Search):
     #     documents_list.append(doc)
 
     # ~~~ Without <p></p> tags logic. ~~~
+
     documents_list = schema.text.split("\n")
+    
+    # Remove the last element from list if it's an empty string with '\n' char
+    if not documents_list[-1]: 
+        documents_list.pop()
+
     search_results = semantic_search(query=schema.query,documents=documents_list)
 
     return JSONResponse(content={"message": "successful", "search_results": search_results})
