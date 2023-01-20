@@ -12,9 +12,9 @@
 
 # texts=["hello", "goodbye"]
 
-# response = co.embed(  
-#   model='large',  
-#   texts=texts)  
+# response = co.embed(
+#   model='large',
+#   texts=texts)
 
 
 # # print('Embeddings: {}'.format(response.embeddings))
@@ -61,7 +61,6 @@
 # print('Embeddings: {}'.format(response))
 
 
-
 # Store embeddings in a index in Pinecone
 # import pinecone
 # pinecone_api_key = os.getenv("PINECONE_API_KEY")
@@ -76,7 +75,6 @@
 # # Transform data that needs to be indexed.
 # # Format will be list of tuples [(id,[vectors],{metadata})]
 # index.upsert()
-
 
 
 # Check the dimensions of the embeddings
@@ -107,7 +105,7 @@
 
 
 # Format the results
-# results = pd.DataFrame(data={'texts': df.iloc[similar_item_ids[0]]['text'], 
+# results = pd.DataFrame(data={'texts': df.iloc[similar_item_ids[0]]['text'],
 #                             'distance': similar_item_ids[1]})
 
 
@@ -115,8 +113,7 @@
 # print(results)
 
 
-
-def semantic_search(query,documents):
+def semantic_search(query, documents):
     from annoy import AnnoyIndex
     import pandas as pd
     import os
@@ -134,62 +131,68 @@ def semantic_search(query,documents):
     for index in range(len(documents)):
         documents_mapping[index] = documents[index]
 
-    dataset = pd.DataFrame(documents,columns=["text"])
+    dataset = pd.DataFrame(documents, columns=["text"])
     df = pd.DataFrame(dataset)
-    
+
     # Generate embeddings.
-    response = co.embed(texts=list(df['text']),
-                  model='large',
-                  truncate='LEFT').embeddings
+    response = co.embed(
+        texts=list(df["text"]), model="large", truncate="LEFT"
+    ).embeddings
 
     embeds = np.array(response)
     embeds.shape
 
     # Create a search index with embeddings using Annoy
-    search_index = AnnoyIndex(embeds.shape[1], 'angular')
+    search_index = AnnoyIndex(embeds.shape[1], "angular")
 
     for i in range(len(embeds)):
         search_index.add_item(i, embeds[i])
 
-    search_index.build(10) # 10 trees
-    search_index.save('test.ann')
+    search_index.build(10)  # 10 trees
+    search_index.save("test.ann")
 
-    # Generate query embeddings 
-    query_embed = co.embed(texts=[query],
-                  model="large",
-                  truncate="LEFT").embeddings
+    # Generate query embeddings
+    query_embed = co.embed(texts=[query], model="large", truncate="LEFT").embeddings
 
     # Retrieve the nearest neighbors from index for a query
-    similar_item_ids = search_index.get_nns_by_vector(query_embed[0],10,
-                                                include_distances=True)
+    similar_item_ids = search_index.get_nns_by_vector(
+        query_embed[0], 10, include_distances=True
+    )
 
-    
     results_dict = {}
     normalized_score = sum(similar_item_ids[1])
 
-    for index,score in zip(similar_item_ids[0],similar_item_ids[1]):
+    for index, score in zip(similar_item_ids[0], similar_item_ids[1]):
         if score >= 1:
-            results_dict[index] = {"doc":documents_mapping.get(index),"relevance_score":0}
+            results_dict[index] = {
+                "doc": documents_mapping.get(index),
+                "relevance_score": 0,
+            }
         else:
-            results_dict[index] = {"doc":documents_mapping.get(index),"relevance_score":100-(round(score/normalized_score,2)*100)}
+            results_dict[index] = {
+                "doc": documents_mapping.get(index),
+                "relevance_score": 100 - (round(score / normalized_score, 2) * 100),
+            }
 
     # Add color hex for top 3 ranked docs
-    sorted_data = sorted(results_dict.items(), key=lambda x: x[1]["relevance_score"],reverse=True)
+    sorted_data = sorted(
+        results_dict.items(), key=lambda x: x[1]["relevance_score"], reverse=True
+    )
 
     top_three = 1
     for dict_tuple in sorted_data:
         original_index = dict_tuple[0]
 
         if dict_tuple[1]["relevance_score"] != 0:
-            if top_three ==1:
-                results_dict[original_index].update({"color":"#d2f8d2"})
+            if top_three == 1:
+                results_dict[original_index].update({"color": "#d2f8d2"})
             elif top_three == 2:
-                results_dict[original_index].update({"color":"#ffc0cb"})
+                results_dict[original_index].update({"color": "#ffc0cb"})
             elif top_three == 3:
-                results_dict[original_index].update({"color":"#ffffe0"})
-            
+                results_dict[original_index].update({"color": "#ffffe0"})
+
             top_three += 1
         else:
-            results_dict[original_index].update({"color":""})
+            results_dict[original_index].update({"color": ""})
 
     return results_dict

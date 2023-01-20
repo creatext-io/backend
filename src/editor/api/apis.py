@@ -12,10 +12,15 @@ from fastapi import (
     WebSocket,
     WebSocketDisconnect,
 )
-from ..schemas import AutoComplete,Search
+from ..schemas import AutoComplete, Search
 from ...openai.gpt3 import GPT3
 from ...openai.functions import auto_completions
 from ...cohere.semantic_search import semantic_search
+from sqlalchemy.orm import Session
+from src.database import get_db_session
+from src.editor.schemas import DocumentSchema
+from src.editor.models import Document
+from datetime import datetime
 
 
 router = APIRouter()
@@ -33,7 +38,7 @@ async def auto_complete(request: Request, schema: AutoComplete):
     text = schema.text
 
     # Send to GPT3 and get results
-    gpt3_output = auto_completions(text,multi_line=schema.multi_line)
+    gpt3_output = auto_completions(text, multi_line=schema.multi_line)
     return JSONResponse(
         content={"message": "successful", "input_data": text, "completion": gpt3_output}
     )
@@ -46,7 +51,6 @@ async def search(request: Request, schema: Search):
     # Pre-process text and slice it into chunks.
     # Here we split the text based on newline characters.
 
-
     # ~~~ Code when receiving text with <p></p> tags. ~~~~
     # Use regex to parse for <p> tags
     # p_tag = re.finditer("<p>",schema.text)
@@ -55,7 +59,6 @@ async def search(request: Request, schema: Search):
     # pattern_list = {"p":[p_tag],"/p":[p_slash_tag]}
     # for key,match_obj in pattern_list.items():
     #     pattern_list[key]=[match_p.span() for match_p in match_obj[0]]
-
 
     # # Now merge the two lists in using regex
     # final_list = []
@@ -76,11 +79,30 @@ async def search(request: Request, schema: Search):
     # ~~~ Without <p></p> tags logic. ~~~
 
     documents_list = schema.text.split("\n")
-    
+
     # Remove the last element from list if it's an empty string with '\n' char
-    if not documents_list[-1]: 
+    if not documents_list[-1]:
         documents_list.pop()
 
-    search_results = semantic_search(query=schema.query,documents=documents_list)
+    search_results = semantic_search(query=schema.query, documents=documents_list)
 
-    return JSONResponse(content={"message": "successful", "search_results": search_results})
+    return JSONResponse(
+        content={"message": "successful", "search_results": search_results}
+    )
+
+
+@router.post("/save")
+async def save_document(
+    request: Request, schema: DocumentSchema, db: Session = Depends(get_db_session)
+):
+
+    title = schema.title
+    body = schema.body
+    unix_date = schema.date
+
+    # Save the document in db.
+    document = Document(title=title, body=body, date=datetime.fromtimestamp(unix_date))
+    db.add(document)
+    db.commit()
+
+    return JSONResponse(content={"status": "successful", "message": "document saved"})

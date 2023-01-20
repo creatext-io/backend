@@ -15,20 +15,31 @@ import configparser
 # auth_key = "Bearer " + AUTH_KEY
 
 
-def auto_completions(user_query,multi_line=False):
+def auto_completions(user_query, multi_line=False):
 
     user_query = user_query.rstrip()
     total_len_of_chars = len(user_query)
-
 
     # stop sequence
     stop_sequences = ["###", "input:", "##"]
 
     if not multi_line:
 
-        mini_context_window = "input:Life might have wiped itself out on early Mars and that's not as absurd as it sounds because"+ "\n"+ "output:Life might have wiped itself out on early Mars and that's not as absurd as it sounds because that's sort of what happened on Earth." + "\n\n"
+        mini_context_window = (
+            "input:Life might have wiped itself out on early Mars and that's not as absurd as it sounds because"
+            + "\n"
+            + "output:Life might have wiped itself out on early Mars and that's not as absurd as it sounds because that's sort of what happened on Earth."
+            + "\n\n"
+        )
 
-        user_query = "Suggest short text completions for the following incomplete sentences.\n\n"+ mini_context_window + "input:" + user_query + "\n" + "output:"
+        user_query = (
+            "Suggest short text completions for the following incomplete sentences.\n\n"
+            + mini_context_window
+            + "input:"
+            + user_query
+            + "\n"
+            + "output:"
+        )
 
         with httpx.Client() as client:
             response_gpt = client.post(
@@ -44,9 +55,15 @@ def auto_completions(user_query,multi_line=False):
                     "stop": stop_sequences,
                 },
             )
-    
+
     else:
-        user_query = "Suggest long text completions for the incomplete sentences with precise information without any special characters.\n\n"+ "input:" + user_query + "\n\n" + "output:"
+        user_query = (
+            "Suggest long text completions for the incomplete sentences with precise information without any special characters.\n\n"
+            + "input:"
+            + user_query
+            + "\n\n"
+            + "output:"
+        )
 
         with httpx.Client() as client:
             response_gpt = client.post(
@@ -63,12 +80,7 @@ def auto_completions(user_query,multi_line=False):
                 },
             )
 
-    
-    
     textcomp_json = response_gpt.json()["choices"][0]
     final_completion = textcomp_json["text"].lstrip("\n").rstrip("\n")
     final_completion = final_completion[total_len_of_chars:].lstrip()
     return final_completion
-
-
-

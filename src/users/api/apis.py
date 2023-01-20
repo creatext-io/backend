@@ -21,38 +21,40 @@ router = APIRouter()
 
 
 @router.post("/login")
-async def login(request: Request, schema: UserSchema,db: Session = Depends(get_db_session)):
+async def login(
+    request: Request, schema: UserSchema, db: Session = Depends(get_db_session)
+):
 
     # Get the text from client
     email = schema.email
     access_key = schema.key
 
     # TODO logic for validating email and access key for a user
-    user = db.query(User).filter_by(
-            email=email,access_key=access_key
-        )
+    user = db.query(User).filter_by(email=email, access_key=access_key)
 
     user = list(user)
 
     if user:
         # Send to GPT3 and get results
         return JSONResponse(
-            content={"message": "successful", "status": "logged_in"}
+            content={"status": "successful", "message": "user successfuly logged in"}
         )
 
     return JSONResponse(
-            content={"message": "successful", "status": "user does not exist."}
-        )
+        content={"status": "successful", "message": "user does not exist."}
+    )
 
 
 @router.post("/white-list-user")
-async def whitelist_user(request: Request, schema: UserSchema,db: Session = Depends(get_db_session)):
-    
+async def whitelist_user(
+    request: Request, schema: UserSchema, db: Session = Depends(get_db_session)
+):
+
     # Get the text from client
     email = schema.email
     access_key = schema.key
 
-    user = User(email=email,access_key=access_key)
+    user = User(email=email, access_key=access_key)
     db.add(user)
     db.commit()
 
@@ -61,5 +63,3 @@ async def whitelist_user(request: Request, schema: UserSchema,db: Session = Depe
         return JSONResponse(
             content={"message": "successful", "status": "user white listed."}
         )
-
-    
