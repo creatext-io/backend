@@ -99,9 +99,12 @@ async def save_document(
     title = schema.title
     body = schema.body
     unix_date = schema.date
+    user = schema.user_id
 
     # Save the document in db.
-    document = Document(title=title, body=body, date=datetime.fromtimestamp(unix_date))
+    document = Document(
+        title=title, body=body, date=datetime.fromtimestamp(unix_date), user_id=user
+    )
     db.add(document)
     db.commit()
 

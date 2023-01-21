@@ -35,6 +35,7 @@ class Document(BaseModel):
     title = Column(String(500), unique=False, nullable=True)
     body = Column(Text(), nullable=True)
     date = Column(DateTime, default=datetime.utcnow)
+    user_id = Column(Integer, ForeignKey("user.id"))
 
     def __repr__(self):
         return f"<Document: {self.id}>"

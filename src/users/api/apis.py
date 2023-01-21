@@ -37,11 +37,19 @@ async def login(
     if user:
         # Send to GPT3 and get results
         return JSONResponse(
-            content={"status": "successful", "message": "user successfuly logged in"}
+            content={
+                "status": "successful",
+                "message": "user successfuly logged in",
+                "data": user.id,
+            }
         )
 
     return JSONResponse(
-        content={"status": "successful", "message": "user does not exist."}
+        content={
+            "status": "successful",
+            "message": "user does not exist.",
+            "data": None,
+        }
     )
 
 

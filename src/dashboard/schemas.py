@@ -10,8 +10,6 @@ class DocumentSchema(BaseModel):
     uuid: Optional[uuid.UUID]
     created_at: Optional[datetime]
     modified_at: Optional[datetime]
-    is_deleted: Optional[bool]
-    is_active: Optional[bool]
     title: str
     body: str
     date: Optional[datetime]

@@ -19,3 +19,4 @@ class DocumentSchema(BaseModel):
     title: str
     body: str
     date: Union[int, float]
+    user_id: int

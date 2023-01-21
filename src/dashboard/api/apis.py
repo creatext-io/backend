@@ -21,16 +21,33 @@ from src.dashboard.schemas import DocumentSchema
 router = APIRouter()
 
 
-@router.get("/documents")
-async def get_all_documents(request: Request, db: Session = Depends(get_db_session)):
+@router.get("/documents/{user_id}")
+async def get_all_documents(
+    request: Request, user_id: int, db: Session = Depends(get_db_session)
+):
 
     # Fetch the document from db.
-    documents = list(db.query(Document).filter(Document.id >= 1))
-
-    # TODO for each document in list `documents` send the document data find out
-    # how to do it in an optimised manner using pydantic from_orm()
+    documents = list(db.query(Document).filter_by(user_id=user_id))
 
     if documents:
+        docs = []
+
+        # Form data objects
+        for doc in documents:
+            docs.append(DocumentSchema.from_orm(doc).json())
+
         return JSONResponse(
-            content={"message": "successful", "status": "documents fetched."}
+            content={
+                "message": "successful",
+                "status": "documents fetched.",
+                "data": docs,
+            }
+        )
+    else:
+        return JSONResponse(
+            content={
+                "message": "successful",
+                "status": "documents fetched.",
+                "data": [],
+            }
         )
