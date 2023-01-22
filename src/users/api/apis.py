@@ -32,7 +32,7 @@ async def login(
     # TODO logic for validating email and access key for a user
     user = db.query(User).filter_by(email=email, access_key=access_key)
 
-    user = list(user)
+    user = list(user)[0]
 
     if user:
         # Send to GPT3 and get results

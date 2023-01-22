@@ -17,6 +17,8 @@ from src.database import get_db_session
 
 from src.editor.models import Document
 from src.dashboard.schemas import DocumentSchema
+import orjson
+
 
 router = APIRouter()
 
@@ -34,7 +36,7 @@ async def get_all_documents(
 
         # Form data objects
         for doc in documents:
-            docs.append(DocumentSchema.from_orm(doc).json())
+            docs.append(orjson.loads(DocumentSchema.from_orm(doc).json()))
 
         return JSONResponse(
             content={
@@ -51,3 +53,30 @@ async def get_all_documents(
                 "data": [],
             }
         )
+
+
+@router.get("/document/{doc_uuid}")
+async def get_document(
+    request: Request, doc_uuid: str, db: Session = Depends(get_db_session)
+):
+
+    # Get the document from db.
+    document = list(db.query(Document).filter_by(uuid=doc_uuid))
+
+    if document:
+        json_document = orjson.loads(DocumentSchema.from_orm(document[0]).json())
+        return JSONResponse(
+            content={
+                "status": "successful",
+                "message": "document fetched.",
+                "data": [json_document],
+            }
+        )
+
+    return JSONResponse(
+        content={
+            "status": "successful",
+            "message": "No document",
+            "data": [],
+        }
+    )

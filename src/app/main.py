@@ -9,6 +9,18 @@ from src.dashboard import api as dashboard_apis
 
 
 def get_application():
+
+    if not settings.DEVELOPMENT:
+        import sentry_sdk
+
+        sentry_sdk.init(
+            dsn="https://733541db08294a60a49d62d2a0ab7840@o4504547672588288.ingest.sentry.io/4504547676323840",
+            # Set traces_sample_rate to 1.0 to capture 100%
+            # of transactions for performance monitoring.
+            # We recommend adjusting this value in production,
+            traces_sample_rate=1.0,
+        )
+
     _app = FastAPI(
         title=settings.PROJECT_NAME,
         redoc_url=None,
