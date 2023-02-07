@@ -13,6 +13,7 @@ class DocumentSchema(BaseModel):
     title: str
     body: str
     date: Optional[datetime]
+    doc_id: str
 
     class Config:
         orm_mode = True

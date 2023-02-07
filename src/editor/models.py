@@ -1,5 +1,6 @@
 import enum
 import uuid
+import secrets
 from datetime import datetime
 
 from sqlalchemy import (
@@ -36,6 +37,7 @@ class Document(BaseModel):
     body = Column(Text(), nullable=True)
     date = Column(DateTime, default=datetime.utcnow)
     user_id = Column(Integer, ForeignKey("user.id"))
+    doc_id = Column(String(100), unique=True, nullable=True)
 
     def __repr__(self):
         return f"<Document: {self.id}>"

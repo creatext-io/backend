@@ -61,7 +61,7 @@ async def get_document(
 ):
 
     # Get the document from db.
-    document = list(db.query(Document).filter_by(uuid=doc_uuid))
+    document = list(db.query(Document).filter_by(doc_id=doc_uuid))
 
     if document:
         json_document = orjson.loads(DocumentSchema.from_orm(document[0]).json())
@@ -78,5 +78,22 @@ async def get_document(
             "status": "successful",
             "message": "No document",
             "data": [],
+        }
+    )
+
+
+@router.post("/delete/{doc_id}")
+async def delete_document(
+    request: Request, doc_id: str, db: Session = Depends(get_db_session)
+):
+
+    # Delete the document
+    db.query(Document).filter_by(doc_id=doc_id).delete()
+    db.commit()
+
+    return JSONResponse(
+        content={
+            "status": "successful",
+            "message": "Document deleted",
         }
     )

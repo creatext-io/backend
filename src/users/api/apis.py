@@ -14,7 +14,7 @@ from fastapi import (
 )
 from sqlalchemy.orm import Session
 from src.users.schemas import UserSchema
-from src.database import get_db_session
+from src.database import get_db_session, redis_conn
 from src.users.models import User
 
 router = APIRouter()
@@ -22,7 +22,9 @@ router = APIRouter()
 
 @router.post("/login")
 async def login(
-    request: Request, schema: UserSchema, db: Session = Depends(get_db_session)
+    request: Request,
+    schema: UserSchema,
+    db: Session = Depends(get_db_session),
 ):
 
     # Get the text from client
