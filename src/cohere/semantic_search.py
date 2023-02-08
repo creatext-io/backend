@@ -114,12 +114,14 @@
 
 
 def semantic_search(query, documents):
-    from annoy import AnnoyIndex
-    import pandas as pd
     import os
-    import cohere
+
     import numpy as np
+    import pandas as pd
+    from annoy import AnnoyIndex
     from dotenv import load_dotenv
+
+    import cohere
 
     load_dotenv()
 

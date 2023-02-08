@@ -1,30 +1,10 @@
-import enum
-import uuid
-import secrets
 from datetime import datetime
 
-from sqlalchemy import (
-    JSON,
-    BigInteger,
-    Boolean,
-    Column,
-    DateTime,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    String,
-    Text,
-    UniqueConstraint,
+from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String, Text
 )
-
-from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from src.database import BaseModel
 
-from src.database import Base
-
+from src.database import Base, BaseModel
 
 Base = declarative_base()
 

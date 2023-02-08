@@ -1,30 +1,21 @@
-import httpx
 import asyncio
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
-from fastapi import (
-    Depends,
-    FastAPI,
-    HTTPException,
-    status,
-    APIRouter,
-    Request,
-    WebSocket,
-    WebSocketDisconnect,
-)
-from ..schemas import AutoComplete, Search, AutoCompleteNew
-from ...openai.gpt3 import GPT3
-from ...openai.functions import auto_completions
-from ...cohere.semantic_search import semantic_search
-from sqlalchemy.orm import Session
-from src.database import get_db_session
-from src.editor.schemas import DocumentSchema
-from src.editor.models import Document
 from datetime import datetime
-from src.database import redis_conn
-from src.openai import auto_complete_engine, auto_completions
+
+import httpx
+from fastapi import (APIRouter, BackgroundTasks, Depends, Request
+)
+from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
 
+from src.database import get_db_session, redis_conn
+from src.editor.models import Document
+from src.editor.schemas import DocumentSchema
+
+from ...cohere.semantic_search import semantic_search
+# from ...openai.functions import auto_completions
+from src.openai.auto_complete import auto_completions
+from ..schemas import AutoComplete, AutoCompleteNew, Search
 
 router = APIRouter()
 
@@ -49,7 +40,10 @@ async def auto_complete(request: Request, schema: AutoComplete):
 
 @router.post("/autocomplete")
 async def auto_complete(
-    request: Request, schema: AutoCompleteNew, redis_db=Depends(redis_conn)
+    request: Request,
+    schema: AutoCompleteNew,
+    background_task: BackgroundTasks,
+    redis_db=Depends(redis_conn),
 ):
 
     # Get the request data from client
@@ -62,7 +56,13 @@ async def auto_complete(
     #     data=text, redis=redis_db, doc_id=document_id
     # )
 
-    auto_completion = auto_completions(data=text, redis=redis_db, doc_id=document_id)
+    auto_completion = await auto_completions(
+        data=text,
+        redis=redis_db,
+        cursor_position=cursor_position,
+        doc_id=document_id,
+        background_task=background_task,
+    )
 
     return JSONResponse(content={"status": "successful", "completion": auto_completion})
 

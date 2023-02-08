@@ -1,10 +1,11 @@
 import os
+
 import httpx
-from langchain.llms import OpenAI
 from langchain.chains import LLMChain
 from langchain.llms.loading import load_llm
-from langchain.prompts.few_shot import FewShotPromptTemplate
 from langchain.prompts.prompt import PromptTemplate
+
+from src.utils.helpers import calculate_tokens
 
 # Load LLM from config file
 file_path = os.getcwd() + "/src/openai/llm_config.yaml"
@@ -91,19 +92,22 @@ def auto_complete_engine(data, doc_id, redis=None):
     return auto_completion
 
 
-def auto_completions(data, doc_id, redis=None):
+async def auto_completions(data, doc_id, background_task, cursor_position, redis=None):
 
     data = data.rstrip()
 
+    # This condition happens if user starts typing in between the text so we check with cursor position
+    if cursor_position and cursor_position < len(data):
+        data = data[:cursor_position].rstrip()
+
     # stop sequence
     stop_sequences = ["###", "##", "\n\n\n"]
-
     prompt_template = "Provide text completion for the following incomplete sentences if there is no starting sentence then create one of its own based on what is written before.\n\n{0}".format(
         data
     )
 
-    with httpx.Client() as client:
-        response_gpt = client.post(
+    async with httpx.AsyncClient() as client:
+        response_gpt = await client.post(
             url="https://api.openai.com/v1/completions",
             headers={
                 "Authorization": "Bearer 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"
@@ -117,5 +121,19 @@ def auto_completions(data, doc_id, redis=None):
             },
         )
 
-    textcomp_json = response_gpt.json()["choices"][0]["text"].lstrip()
-    return textcomp_json
+    if response_gpt.json().get("error"):
+        return ""
+
+    textcomp_json = response_gpt.json()["choices"][0]["text"]
+
+    # Calculate and store tokens in redis (background task)
+    completion = textcomp_json
+    background_task.add_task(
+        calculate_tokens,
+        text=prompt_template,
+        completion=completion,
+        doc_id=doc_id,
+        redis_db=redis,
+    )
+
+    return textcomp_json.lstrip()

@@ -1,8 +1,9 @@
 """Pydantic schemas for Dashboard apis"""
-from pydantic import BaseModel, Json
-from typing import Optional
-from datetime import datetime
 import uuid
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel
 
 
 class DocumentSchema(BaseModel):

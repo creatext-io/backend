@@ -1,6 +1,5 @@
 """ Prompt formatting for GPT API calls"""
 
-import openai
 import uuid
 
 # from transformers import GPT2TokenizerFast

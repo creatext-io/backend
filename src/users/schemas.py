@@ -1,6 +1,6 @@
 """Pydantic schemas for User apis"""
-from pydantic import BaseModel, Json
-from typing import Optional
+
+from pydantic import BaseModel
 
 
 class UserSchema(BaseModel):

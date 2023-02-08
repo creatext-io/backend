@@ -1,33 +1,17 @@
 """ This file has the DB settings """
-
-from contextlib import contextmanager
-from typing import final
-
-# import redis
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
-import enum
 import uuid
+from contextlib import contextmanager
 from datetime import datetime
 
-from sqlalchemy import (
-    JSON,
-    BigInteger,
-    Boolean,
-    Column,
-    DateTime,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    String,
-    Text,
-    UniqueConstraint,
+import redis
+# import redis
+from sqlalchemy import (BigInteger, Boolean, Column, DateTime, create_engine
 )
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
 from src.app.core.config import settings
-import redis
 
 # Postgres db/password connection
 SQLALCHEMY_DATABASE_URL = settings.DB_CONNECTION_URL

@@ -1,27 +1,9 @@
-import enum
-import uuid
-from datetime import datetime
 
-from sqlalchemy import (
-    JSON,
-    BigInteger,
-    Boolean,
-    Column,
-    DateTime,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    String,
-    UniqueConstraint,
+from sqlalchemy import (Column, String
 )
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-
 from src.database import BaseModel
-
 
 # class BaseModel(Base):
 #     """BaseModel for every children models"""

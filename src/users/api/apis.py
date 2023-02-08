@@ -1,21 +1,12 @@
-import json
-import re
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
-from fastapi import (
-    Depends,
-    FastAPI,
-    HTTPException,
-    status,
-    APIRouter,
-    Request,
-    WebSocket,
-    WebSocketDisconnect,
+
+from fastapi import (APIRouter, Depends, Request
 )
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from src.users.schemas import UserSchema
-from src.database import get_db_session, redis_conn
+
+from src.database import get_db_session
 from src.users.models import User
+from src.users.schemas import UserSchema
 
 router = APIRouter()
 

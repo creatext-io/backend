@@ -1,7 +1,5 @@
-import os
-import httpx
-import configparser
 
+import httpx
 
 # Reading config for openai auth_key
 # config = configparser.ConfigParser()
