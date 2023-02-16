@@ -1,6 +1,4 @@
-
-from sqlalchemy import (Column, String
-)
+from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
 from src.database import BaseModel
@@ -28,6 +26,7 @@ class User(BaseModel):
     email = Column(String(200), unique=True)
     access_key = Column(String(200), nullable=True)
     documents = relationship("Document", backref="documents")
+    feedback = relationship("Feedback", backref="feedback")
 
     def __repr__(self):
         return f"<User: {self.id}>"

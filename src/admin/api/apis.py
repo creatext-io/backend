@@ -1,10 +1,13 @@
 from typing import Union
-from fastapi import (APIRouter, Depends, Request
-)
+
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
+
 from src.database import get_db_session, redis_conn
 from src.editor.models import Document
+from src.users.models import User
+from src.users.schemas import UserSchema
 
 router = APIRouter()
 
@@ -67,3 +70,23 @@ async def auto_complete(
 
     else:
         return JSONResponse(content={"message": "successful", "data": ""})
+
+
+@router.post("/whitelist-user")
+async def whitelist_user(
+    request: Request, schema: UserSchema, db: Session = Depends(get_db_session)
+):
+
+    # Get the text from client
+    email = schema.email
+    access_key = schema.key
+
+    user = User(email=email, access_key=access_key)
+    db.add(user)
+    db.commit()
+
+    if user:
+        # Send to GPT3 and get results
+        return JSONResponse(
+            content={"message": "user white listed.", "status": "successful"}
+        )

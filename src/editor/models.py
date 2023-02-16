@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import (Column, DateTime, ForeignKey, Integer, String, Text
-)
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 from src.database import Base, BaseModel

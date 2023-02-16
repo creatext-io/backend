@@ -34,6 +34,7 @@ target_metadata = Base.metadata
 
 from src.users.models import * 
 from src.editor.models import *
+from src.admin.models import *
 
 
 # other values from the config, defined by the needs of env.py,

@@ -1,12 +1,11 @@
-
-from fastapi import (APIRouter, Depends, Request
-)
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
+from src.admin.models import Feedback
 from src.database import get_db_session
 from src.users.models import User
-from src.users.schemas import UserSchema
+from src.users.schemas import FeedbackSchema, UserSchema
 
 router = APIRouter()
 
@@ -46,21 +45,15 @@ async def login(
     )
 
 
-@router.post("/white-list-user")
-async def whitelist_user(
-    request: Request, schema: UserSchema, db: Session = Depends(get_db_session)
+@router.post("/feedback")
+async def collect_feedback(
+    request: Request, schema: FeedbackSchema, db: Session = Depends(get_db_session)
 ):
 
-    # Get the text from client
-    email = schema.email
-    access_key = schema.key
-
-    user = User(email=email, access_key=access_key)
-    db.add(user)
+    feedback_obj = Feedback(text=schema.text, user_id=schema.user_id)
+    db.add(feedback_obj)
     db.commit()
 
-    if user:
-        # Send to GPT3 and get results
-        return JSONResponse(
-            content={"message": "successful", "status": "user white listed."}
-        )
+    return JSONResponse(
+        content={"status": "successful", "message": "Feedback submitted"}
+    )

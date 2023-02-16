@@ -4,9 +4,9 @@ from contextlib import contextmanager
 from datetime import datetime
 
 import redis
+
 # import redis
-from sqlalchemy import (BigInteger, Boolean, Column, DateTime, create_engine
-)
+from sqlalchemy import BigInteger, Boolean, Column, DateTime, create_engine
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker

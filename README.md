@@ -1,1 +1,1 @@
-# scrible backend code repo.
+# scrible backend

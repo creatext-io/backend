@@ -1,7 +1,5 @@
-
 import orjson
-from fastapi import (APIRouter, Depends, Request
-)
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 

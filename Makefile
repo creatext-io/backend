@@ -5,3 +5,7 @@ start:
 black:
 	@echo "Black formatting files...✅ 🤩"
 	python -m black ./src
+
+sorter:
+	@echo "sorting imports...🧵
+	python -m isort /src

@@ -2,8 +2,7 @@ import asyncio
 from datetime import datetime
 
 import httpx
-from fastapi import (APIRouter, BackgroundTasks, Depends, Request
-)
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
@@ -12,17 +11,13 @@ from src.database import get_db_session, redis_conn
 from src.editor.models import Document
 from src.editor.schemas import DocumentSchema
 
-from ...cohere.semantic_search import semantic_search
 # from ...openai.functions import auto_completions
 from src.openai.auto_complete import auto_completions
+
+from ...cohere.semantic_search import semantic_search
 from ..schemas import AutoComplete, AutoCompleteNew, Search
 
 router = APIRouter()
-
-
-@router.get("/")
-def get_editor():
-    return "Hold your horses! This is the root"
 
 
 @router.post("/auto-complete")
@@ -125,6 +120,9 @@ async def save_document(
     user = schema.user_id
     doc_id = schema.doc_id
 
+    if unix_date and len(str(unix_date)) == 13:
+        unix_date = int(unix_date / 1000)
+
     # Fetch the documet if not present in db then create one.
     document = list(db.query(Document).filter_by(doc_id=doc_id))
 
@@ -169,7 +167,7 @@ async def auto_complete(request: Request, data: str, redis_db=Depends(redis_conn
                 json={
                     "model": "text-davinci-003",
                     "prompt": prompt_template,
-                    "max_tokens": 50,
+                    "max_tokens": 30,
                     "temperature": 0.7,
                     "stop": stop_sequences,
                     "stream": True,

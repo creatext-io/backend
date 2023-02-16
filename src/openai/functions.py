@@ -1,4 +1,3 @@
-
 import httpx
 
 # Reading config for openai auth_key
