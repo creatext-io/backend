@@ -1,5 +1,5 @@
 """Pydantic schemas for request data"""
-from typing import Union
+from typing import Union, Optional
 
 from pydantic import BaseModel
 
@@ -24,5 +24,5 @@ class DocumentSchema(BaseModel):
     title: str
     body: str
     date: Union[int, float]
-    user_id: int
+    user_id: Optional[int]
     doc_id: str

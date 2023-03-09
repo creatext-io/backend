@@ -7,5 +7,5 @@ black:
 	python -m black ./src
 
 sorter:
-	@echo "sorting imports...🧵
+	@echo "sorting imports...🧵"
 	python -m isort /src

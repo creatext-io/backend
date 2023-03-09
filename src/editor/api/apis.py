@@ -16,8 +16,19 @@ from src.openai.auto_complete import auto_completions
 
 from ...cohere.semantic_search import semantic_search
 from ..schemas import AutoComplete, AutoCompleteNew, Search
+from src.users.models import User
+from src.utils.dependencies import authenticate_jwt_token
 
 router = APIRouter()
+
+
+@router.get("/")
+async def test(request: Request, email: str = Depends(authenticate_jwt_token)):
+    return JSONResponse(
+        content={
+            "message": "successful",
+        }
+    )
 
 
 @router.post("/auto-complete")
@@ -39,6 +50,7 @@ async def auto_complete(
     schema: AutoCompleteNew,
     background_task: BackgroundTasks,
     redis_db=Depends(redis_conn),
+    email: str = Depends(authenticate_jwt_token),
 ):
 
     # Get the request data from client
@@ -111,14 +123,20 @@ async def search(request: Request, schema: Search):
 
 @router.put("/save")
 async def save_document(
-    request: Request, schema: DocumentSchema, db: Session = Depends(get_db_session)
+    request: Request,
+    schema: DocumentSchema,
+    db: Session = Depends(get_db_session),
+    email: str = Depends(authenticate_jwt_token),
 ):
 
     title = schema.title
     body = schema.body
     unix_date = schema.date
-    user = schema.user_id
+    # user = schema.user_id
     doc_id = schema.doc_id
+
+    user = list(db.query(User).filter_by(email=email))
+    user = user[0]
 
     if unix_date and len(str(unix_date)) == 13:
         unix_date = int(unix_date / 1000)
@@ -137,7 +155,7 @@ async def save_document(
             title=title,
             body=body,
             date=datetime.fromtimestamp(unix_date),
-            user_id=user,
+            user_id=user.id,
             doc_id=doc_id,
         )
         db.add(document)

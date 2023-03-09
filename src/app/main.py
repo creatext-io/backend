@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.admin import api as admin_apis
@@ -6,6 +6,8 @@ from src.app.core.config import settings
 from src.dashboard import api as dashboard_apis
 from src.editor import api as editor_apis
 from src.users import api as user_apis
+from src.auth import api as auth_apis
+from src.utils.dependencies import authenticate_jwt_token
 
 
 def get_application():
@@ -43,10 +45,16 @@ app = get_application()
 
 
 # Include all API urls from different modules
-app.include_router(editor_apis.router)
-app.include_router(user_apis.router)
-app.include_router(dashboard_apis.router)
+app.include_router(
+    editor_apis.router
+)  # ,dependencies=[Depends(authenticate_jwt_token)])
+app.include_router(user_apis.router)  # ,dependencies=[Depends(authenticate_jwt_token)])
+app.include_router(
+    dashboard_apis.router
+)  # ,dependencies=[Depends(authenticate_jwt_token)])
 app.include_router(admin_apis.router)
+app.include_router(auth_apis.router)
+
 
 # Startup event is exceuted when app first starts/reloads
 # @app.on_event("startup")

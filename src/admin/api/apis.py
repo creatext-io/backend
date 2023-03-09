@@ -9,10 +9,10 @@ from src.editor.models import Document
 from src.users.models import User
 from src.users.schemas import UserSchema
 
-router = APIRouter()
+router = APIRouter(prefix="/admin")
 
 
-@router.get("/admin/token-analytics")
+@router.get("/token-analytics")
 async def auto_complete(
     request: Request,
     user_id: Union[int, None] = None,
@@ -52,7 +52,7 @@ async def auto_complete(
             total_tokens[doc_id] = int(tokens_count.decode())
             return JSONResponse(content={"message": "successful", "data": total_tokens})
 
-    elif not (doc_id and user_id):
+    else:
         total_tokens = {}
         # Case when data is required for `all users and all documents`.
         docs = list(db.query(Document).all())
@@ -60,16 +60,16 @@ async def auto_complete(
         for doc in docs:
             user_id = doc.user_id
 
-            total_tokens[user_id] = {}
+            if user_id not in total_tokens.keys():
+                total_tokens[user_id] = {}
+
             # Get tokens consumed count from Redis for each document
             tokens_count = redis_db.hget(name=doc.doc_id, key="tokens_consumed")
+
             if tokens_count:
                 total_tokens[user_id].update({doc.doc_id: int(tokens_count.decode())})
 
         return JSONResponse(content={"message": "successful", "data": total_tokens})
-
-    else:
-        return JSONResponse(content={"message": "successful", "data": ""})
 
 
 @router.post("/whitelist-user")

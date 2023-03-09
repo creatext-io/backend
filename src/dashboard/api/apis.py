@@ -6,17 +6,25 @@ from sqlalchemy.orm import Session
 from src.dashboard.schemas import DocumentSchema
 from src.database import get_db_session
 from src.editor.models import Document
+from src.users.models import User
+from src.utils.dependencies import authenticate_jwt_token
+
 
 router = APIRouter()
 
 
-@router.get("/documents/{user_id}")
+@router.get("/documents")
 async def get_all_documents(
-    request: Request, user_id: int, db: Session = Depends(get_db_session)
+    request: Request,
+    db: Session = Depends(get_db_session),
+    email: str = Depends(authenticate_jwt_token),
 ):
 
+    user = list(db.query(User).filter_by(email=email))
+
+    user = user[0]
     # Fetch the document from db.
-    documents = list(db.query(Document).filter_by(user_id=user_id))
+    documents = list(db.query(Document).filter_by(user_id=user.id))
 
     if documents:
         docs = []
@@ -44,7 +52,10 @@ async def get_all_documents(
 
 @router.get("/document/{doc_uuid}")
 async def get_document(
-    request: Request, doc_uuid: str, db: Session = Depends(get_db_session)
+    request: Request,
+    doc_uuid: str,
+    db: Session = Depends(get_db_session),
+    email: str = Depends(authenticate_jwt_token),
 ):
 
     # Get the document from db.
@@ -71,7 +82,9 @@ async def get_document(
 
 @router.post("/delete/{doc_id}")
 async def delete_document(
-    request: Request, doc_id: str, db: Session = Depends(get_db_session)
+    request: Request,
+    doc_id: str,
+    db: Session = Depends(get_db_session),
 ):
 
     # Delete the document
