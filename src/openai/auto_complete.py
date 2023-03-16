@@ -4,7 +4,7 @@ import httpx
 from langchain.chains import LLMChain
 from langchain.llms.loading import load_llm
 from langchain.prompts.prompt import PromptTemplate
-
+from string import punctuation
 from src.utils.helpers import calculate_tokens
 
 # Load LLM from config file
@@ -101,7 +101,7 @@ async def auto_completions(data, doc_id, background_task, cursor_position, redis
         data = data[:cursor_position].rstrip()
 
     # stop sequence
-    stop_sequences = ["###", "##", "\n\n\n"]
+    stop_sequences = ["##", "\n\n\n", "---", "-----"]
     prompt_template = "Provide text completion for the following incomplete sentences if there is no starting sentence then create one of its own based on what is written before.\n\n{0}".format(
         data
     )
@@ -125,6 +125,16 @@ async def auto_completions(data, doc_id, background_task, cursor_position, redis
         return ""
 
     textcomp_json = response_gpt.json()["choices"][0]["text"]
+
+    # Remove any special characters in autocompletion
+    for index in range(len(punctuation)):
+        if punctuation[index] in textcomp_json:
+            char_index = textcomp_json.index(punctuation[index])
+            textcomp_json = textcomp_json[:char_index]
+        continue
+
+    # TODO improve the logic of how tokens are being calculated only account for generated tokens
+    # dont count the prompt or previous tokens.
 
     # Calculate and store tokens in redis (background task)
     completion = textcomp_json

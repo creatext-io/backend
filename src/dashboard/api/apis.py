@@ -85,6 +85,7 @@ async def delete_document(
     request: Request,
     doc_id: str,
     db: Session = Depends(get_db_session),
+    email: str = Depends(authenticate_jwt_token),
 ):
 
     # Delete the document

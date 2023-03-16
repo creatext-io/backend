@@ -22,28 +22,6 @@ from src.utils.dependencies import authenticate_jwt_token
 router = APIRouter()
 
 
-@router.get("/")
-async def test(request: Request, email: str = Depends(authenticate_jwt_token)):
-    return JSONResponse(
-        content={
-            "message": "successful",
-        }
-    )
-
-
-@router.post("/auto-complete")
-async def auto_complete(request: Request, schema: AutoComplete):
-
-    # Get the text from client
-    text = schema.text
-
-    # Send to GPT3 and get results
-    gpt3_output = auto_completions(text, multi_line=schema.multi_line)
-    return JSONResponse(
-        content={"message": "successful", "input_data": text, "completion": gpt3_output}
-    )
-
-
 @router.post("/autocomplete")
 async def auto_complete(
     request: Request,

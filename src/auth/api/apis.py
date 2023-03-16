@@ -65,14 +65,27 @@ async def signup(
 
     hashed_access_key = get_password_hash(access_key)
 
-    user = User(email=email, access_key=hashed_access_key)
-    db.add(user)
-    db.commit()
+    # Check if user already exists in DB with same username
+    user_exists_query = db.query(User).filter_by(email=email).exists()
+    user_exists = db.query(user_exists_query).scalar()
+
+    if not user_exists:
+        user = User(email=email, access_key=hashed_access_key)
+        db.add(user)
+        db.commit()
+
+        return JSONResponse(
+            content={
+                "status": "successful",
+                "message": "user successfuly signed up",
+                "data": "",
+            }
+        )
 
     return JSONResponse(
         content={
             "status": "successful",
-            "message": "user successfuly signed up",
+            "message": "user with this email already exists",
             "data": "",
         }
     )
