@@ -1,0 +1,15 @@
+#root {  
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.App {
+  position: relative;
+}
+
+.multi-suggestion {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+}
+

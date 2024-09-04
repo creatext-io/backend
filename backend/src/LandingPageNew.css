@@ -1,0 +1,134 @@
+.grid-container {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-areas:
+    "header header header"
+    "header header header"
+    "header header header"
+    "header header header"
+    "footer footer footer";
+}
+
+.grid-container nav {
+  position: fixed;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-image: linear-gradient(
+    -90deg,
+    rgb(163, 167, 255) 0%,
+    rgb(238, 238, 241) 100%
+  );
+  z-index: 999;
+}
+
+.grid-container .nav-link a,
+.join-btn {
+  padding: 0.7rem 1.5rem;
+  margin-left: 2rem;
+}
+
+.nav-link a:nth-child(3),
+.join-btn {
+  background-color: black;
+  color: #ffffff;
+}
+
+.nav-link a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.grid-container header {
+  padding-top: 4rem;
+  display: flex;
+  background-image: linear-gradient(
+    -90deg,
+    rgb(163, 167, 255) 0%,
+    rgb(238, 238, 241) 100%
+  );
+  grid-area: header;
+}
+
+.left,
+.right {
+  flex: 1;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.right {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.right video {
+  width: 45vw;
+}
+
+.grid-container header h1 {
+  font-size: 5rem;
+  font-weight: bolder;
+  line-height: 5rem;
+  margin-bottom: 2rem;
+}
+
+.grid-container footer {
+  grid-area: footer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-container .join-btn {
+  margin: 3rem 0;
+  margin-left: 0;
+}
+
+.grid-container .copyright {
+  font-size: 1rem;
+  margin-top: 1rem;
+}
+
+.grid-container .footertext {
+  color: rgb(0, 0, 0);
+  height: auto;
+  font-size: 2.5rem;
+  align-self: auto;
+  font-style: Medium;
+  text-align: left;
+  font-family: Inter;
+  font-weight: 500;
+  line-height: 100%;
+  font-stretch: normal;
+  margin-right: 0;
+  margin-bottom: 0;
+  text-decoration: none;
+  margin-top: 1rem;
+}
+
+@media screen and (max-width: 414px) {
+  .grid-container .nav-link a {
+    margin-left: 1rem;
+  }
+  .grid-container header {
+    flex-direction: column;
+    padding-bottom: 5rem;
+  }
+  .grid-container .right video {
+    width: 90%;
+  }
+
+  .grid-container footer {
+    padding-bottom: 1rem;
+  }
+}

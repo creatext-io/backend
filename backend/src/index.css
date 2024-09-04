@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  1. Use a more-intuitive box-sizing model.
+*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+/*
+  2. Remove default margin
+*/
+* {
+  margin: 0;
+}
+/*
+  3. Allow percentage-based heights in the application
+*/
+html,
+body {
+  height: 100%;
+  font-family: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+#root,
+#__next {
+  isolation: isolate;
+  padding: 0;
+}
+
+:root {
+  padding: 0;
+  background-color: #f0f4ff;
+}
+
+.App {
+  min-height: calc(100vh - 52px);
+}
+
+.ql-toolbar {
+  border: none !important;
+  border-bottom: 1px solid gainsboro !important;
+}
+
+.ql-container {
+  border: none !important;
+  font-size: 16px !important;
+}
+
+.quill > .ql-container > .ql-editor.ql-blank::before {
+  color: rgb(200, 194, 194);
+}
+
+.ql-editor {
+  padding: 16px !important;
+}
+
+.ql-editor p {
+  font-size: 16px !important;
+  line-height: 24px !important;
+}
+
+.ql-bold,
+.ql-italic,
+.ql-underline {
+  padding: 12px;
+  border-radius: 4px;
+}
+
+.ql-formats .ql-bold,
+.ql-italic {
+  margin-right: 8px !important;
+}
+
+input:focus {
+  outline: none;
+}
+
+.title-scrible {
+  background: -webkit-linear-gradient(rgb(129, 180, 213), rgb(131, 25, 217));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
