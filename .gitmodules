@@ -1,0 +1,3 @@
+[submodule "search_repo"]
+	path = search_repo
+	url = git@github.com:creatext-io/search.git
